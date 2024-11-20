@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import axios from "axios";
 
+const limit = 15;
+
 function App() {
     const [character, setCharacters] = useState([]);
     const [page, setPage] = useState(1);
@@ -15,7 +17,7 @@ function App() {
         const apiUrl = "https://narutodb.xyz/api/character";
         setIsLoading(true);
 
-        const result = await axios.get(apiUrl, { params: { page } });
+        const result = await axios.get(apiUrl, { params: { page, limit } });
         setCharacters(result.data.characters);
         setIsLoading(false);
     };
@@ -24,6 +26,12 @@ function App() {
         const nextPage = page + 1;
         await fetchCharacters(nextPage);
         setPage(nextPage);
+    };
+
+    const handlePrev = async () => {
+        const prevPage = page - 1;
+        await fetchCharacters(prevPage);
+        setPage(prevPage);
     };
 
     return (
@@ -47,9 +55,9 @@ function App() {
                         })}
                     </div>
                     <div className="pager">
-                        <button className="prev">Previous</button>
+                        <button disabled={page === 1} className="prev" onClick={handlePrev}>Previous</button>
                         <span className="page-number">{page}</span>
-                        <button className="next" onClick={handleNext}>Next</button>
+                        <button disabled={limit > character.length} className="next" onClick={handleNext}>Next</button>
                     </div>
                 </main>
             }
